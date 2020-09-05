@@ -18,7 +18,7 @@ contains
     read(un_input,*) stat_output_name
     read(un_input,*) mode_int
     read(un_input,*) Scan_noise
-    read(un_input,*) nu
+    read(un_input,*) eta
     read(un_input,*) alpha
     read(un_input,*) mean_flight
     read(un_input,*) burst_amplitude
@@ -27,10 +27,10 @@ contains
     read(un_input,*) N_reset
     read(un_input,*) N_iterations
     read(un_input,*) Nnbr
-    read(un_input,*) pols_active
-    read(un_input,*) nbrs_active
-    read(un_input,*) write_config_active
-    ! read(un_input,*) msd_active
+    read(un_input,*) print_polarization
+    read(un_input,*) print_GNF
+    read(un_input,*) print_configuration
+    read(un_input,*) print_speed
     read(un_input,*) ignore_last_config
     read(un_input,*) int_L
     read(un_input,*) rho
@@ -64,12 +64,11 @@ contains
     print*, 'MODE: ',mode_str
 
 
-    if (pols_active) call system('mkdir -p '//trim(folder)//'/pol')
-    if (nbrs_active) call system('mkdir -p '//trim(folder)//'/nbr')
-    ! if (msd_active)  call system('mkdir -p '//trim(folder)//'/msd')
-    if (write_config_active) call system('mkdir -p '//trim(folder)//'/config')
+    if (print_polarization) call system('mkdir -p '//trim(folder)//'/polarization')
+    if (print_GNF) call system('mkdir -p '//trim(folder)//'/GNF')
+    if (print_speed)  call system('mkdir -p '//trim(folder)//'/speed')
+    if (print_configuration) call system('mkdir -p '//trim(folder)//'/configuration')
     allocate(pos(N,2))
-    allocate(abs_pos(N,2))
     allocate(unitary_vel(N,2))
     allocate(vel(N))
     allocate(header(N_cells))

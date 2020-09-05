@@ -2,19 +2,20 @@
 None .stat file
 0 mode
 T  noise Scan mode
-0.06   noise value(if Scan_noise=False)
+0.06   noise value (if Scan_noise=False)
 1.2 Levy parameter alpha (if Vicsek_mode=False)
 0.03 mean_flight
 2.1 burst amplitude
-100000 N_measures 100
+100 N_measures 100
 10 N_steps 20
 10 N_reset 50000
-20 N_iterations 10
+0 N_iterations 10
 100   Nnbr
-T pols_active
-F nbr_active
-F write_config_active
+T print_plarization
+T print_GNF
+T print_configurations
+T print_speed
 F ignore_last_config
-54  L (integer)
-10.0   density
+12  L (integer)
+1.0   density
 9314  random seed

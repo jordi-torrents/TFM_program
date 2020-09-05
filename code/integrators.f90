@@ -5,7 +5,7 @@ contains
 
   subroutine integrate_simple_vicsek(isteps)
     real(8) :: noise_cnst, theta(N), nbr_direction(N)
-    noise_cnst = nu*pi*2.d0
+    noise_cnst = eta*pi*2.d0
     do j=1,isteps
       call all_neighbours_direction(nbr_direction)
       do i=1,N
@@ -22,7 +22,7 @@ contains
 
   subroutine integrate_levy_behaviour(isteps)
     real(8) :: noise_cnst, theta(N), nbr_direction(N)
-    noise_cnst = nu*pi*2.d0
+    noise_cnst = eta*pi*2.d0
     do j=1,isteps
       call all_neighbours_direction(nbr_direction)
       do i=1,N
@@ -46,7 +46,7 @@ contains
         vel(particle_i)=vel(particle_i)+burst_amplitude
         timer=timer-log(r1279()+1.e-10)*500.d0
       end do
-      call all_neighbours_direction2()
+      call all_neighbours_direction_and_speed()
       vel=vel*0.998d0
       pos(:,1) = modulo(pos(:,1) + vel(:)*unitary_vel(:,1),L)
       pos(:,2) = modulo(pos(:,2) + vel(:)*unitary_vel(:,2),L)

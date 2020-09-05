@@ -11,22 +11,22 @@ contains
     time_counter=0
     if (Scan_noise) then
       nlines = 0
-      open(153, file = 'nus.dat', status='OLD', action='READ')
+      open(153, file = 'noise_values.dat', status='OLD', action='READ')
       do
         read(153,*,iostat=io)
         if (io/=0) exit
         nlines = nlines + 1
       end do
       close(153)
-      allocate(nu_array(nlines))
-      open(153, file = 'nus.dat', status='OLD', action='READ')
-      do i=1,size(nu_array)
-        read(153,*) nu_array(i)
+      allocate(eta_array(nlines))
+      open(153, file = 'noise_values.dat', status='OLD', action='READ')
+      do i=1,size(eta_array)
+        read(153,*) eta_array(i)
       end do
       close(153)
     else
-      allocate(nu_array(1))
-      nu_array(1)=nu
+      allocate(eta_array(1))
+      eta_array(1)=eta
     end if
 
     open(unit=stat_output_unit, file=trim(stat_output_name))
@@ -34,26 +34,32 @@ contains
     //' Hour: '//hour(1:2)//':'//hour(3:4)//':'//hour(5:6), ' | Mode: ',mode_str
     close(stat_output_unit)
 
-    do j=1,size(nu_array)
-      nu=nu_array(j)
+    do j=1,size(eta_array)
+      eta=eta_array(j)
       call open_output_files()
 
-      if (pols_active) then
+      if (print_polarization) then
         write(pol_output_unit,'(A34)') '# Date : '//date(7:8)//'-'//date(5:6)//'-'//date(1:4)&
         //' Hour: '//hour(1:2)//':'//hour(3:4)//':'//hour(5:6)
-        write(pol_output_unit,'(A5,i7,A6,F5.3,A10,I3,A10,I6,A7,A20)') '# N =',N,' nu = ',nu,&
+        write(pol_output_unit,'(A5,i7,A6,F5.3,A10,I3,A10,I6,A7,A8)') '# N =',N,' eta = ',eta,&
         ' N_steps =',N_steps,' N_reset =',N_reset,' MODE =',mode_str
       end if
 
-      ! if (msd_active) then
-      !   write(msd_output_unit,'(A34)') '# Date : '//date(7:8)//'-'//date(5:6)//'-'//date(1:4)&
-      !   //' Hour: '//hour(1:2)//':'//hour(3:4)//':'//hour(5:6)
-      ! end if
+      if (print_speed) then
+        write(speed_output_unit,'(A34)') '# Date : '//date(7:8)//'-'//date(5:6)//'-'//date(1:4)&
+        //' Hour: '//hour(1:2)//':'//hour(3:4)//':'//hour(5:6)
+        write(speed_output_unit,'(A5,i7,A6,F5.3,A10,I3,A10,I6,A7,A8)') '# N =',N,' eta = ',eta,&
+        ' N_steps =',N_steps,' N_reset =',N_reset,' MODE =',mode_str
+      end if
 
-      if (nbrs_active) then
+      if (print_configuration) then
+        call system('mkdir -p '//trim(folder)//'/GNF/')
+      end if
+
+      if (print_GNF) then
         write(nbr_output_unit,'(A34)') '# Date : '//date(7:8)//'-'//date(5:6)//'-'//date(1:4)&
         //' Hour: '//hour(1:2)//':'//hour(3:4)//':'//hour(5:6)
-        write(nbr_output_unit,'(A5,i7,A6,F5.3,A10,I3,A10,I6,A7,A20)') '# N =',N,' nu = ',nu,&
+        write(nbr_output_unit,'(A5,i7,A6,F5.3,A10,I3,A10,I6,A7,A8)') '# N =',N,' eta = ',eta,&
         ' N_steps =',N_steps,' N_reset =',N_reset,' MODE =',mode_str
         dr=(L2)/dble(Nnbr)
         do i=1,Nnbr
@@ -117,31 +123,40 @@ contains
   subroutine prepare_systems()
     integer :: i
     logical :: file_exists
-    character(2) :: nu_str
+    character(2) :: eta_str
     call system('mkdir -p '//trim(folder)//'/last_state')
-    ! print*, 'Preparing system'
 
-    do i=1,size(nu_array)
-      nu=nu_array(i)
-      write(nu_str,'(i2.2)') nint(nu*100.d0)
-      inquire(file=trim(trim(folder)//'/last_state/nu'//nu_str//'.csv'), exist=file_exists)
+    open(unit=stat_output_unit, file=trim(stat_output_name), status='OLD', action='WRITE', position='APPEND')
+    write(stat_output_unit,*) 'Preparing system'
+    print*, 'Preparing system'
+    close(stat_output_unit)
+
+    do i=1,size(eta_array)
+      eta=eta_array(i)
+      write(eta_str,'(i2.2)') nint(eta*100.d0)
+      call system('mkdir -p '//trim(folder)//'/configuration/eta'//eta_str)
+      inquire(file=trim(trim(folder)//'/last_state/eta'//eta_str//'.csv'), exist=file_exists)
 
       if ((.not.file_exists).or.(ignore_last_config)) then
         call reset_system()
-        nu=0.0
+        eta=0.0
         call integrate_simple_vicsek(N_reset)
-        nu=nu_array(i)
+        eta=eta_array(i)
         if (mode_int==0) call integrate_simple_vicsek(N_reset)
         if (mode_int==1) call integrate_levy_behaviour(N_reset)
         if (mode_int==2) call integrate_burstandcoast(N_reset)
-        int_t=0
-
+        int_time=0
 
         call write_last_configuration()
         open(unit=stat_output_unit, file=trim(stat_output_name), status='OLD', action='WRITE', position='APPEND')
-        write(stat_output_unit,'(A24,f6.3)') 'System prepared with nu=',nu
+        write(stat_output_unit,'(A27,f6.3)') ' System prepared with eta =',eta
+        print'(A27,f6.3)', ' System prepared with eta =',eta
         close(stat_output_unit)
       end if
     end do
+    open(unit=stat_output_unit, file=trim(stat_output_name), status='OLD', action='WRITE', position='APPEND')
+    write(stat_output_unit,*) 'Done!'
+    print*, 'Done!'
+    close(stat_output_unit)
   end subroutine
 end module

@@ -49,7 +49,7 @@ contains
   end subroutine
 
 
-  subroutine all_neighbours_direction2()
+  subroutine all_neighbours_direction_and_speed()
     real(8) :: nbr_vel(N), nbr_dir(N,2), theta_i
     integer :: cell, i, j, k, counter(N)
     call build_cell_lists()
@@ -93,7 +93,7 @@ contains
       end do
     end do
     do i=1,N
-      theta_i=atan2(nbr_dir(i,2),nbr_dir(i,1))+nu*pi*2.d0*(r1279()-0.5)
+      theta_i=atan2(nbr_dir(i,2),nbr_dir(i,1))+eta*pi*2.d0*(r1279()-0.5)
       unitary_vel(i,:)=(/cos(theta_i),sin(theta_i)/)
       vel(i)=max(vel(i),nbr_vel(i)/dble(counter(i)))
     end do
