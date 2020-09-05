@@ -22,7 +22,6 @@ program levy_program
 
         call read_last_configuration()
         call open_output_files()
-        print*, 'alehop'
 
         do i1=1,N_measures
           call integrate_simple_vicsek(N_steps)
@@ -51,7 +50,7 @@ program levy_program
       end do
       call print_stat(iteration,start_iteration)
 
-    else if (mode_int==1) then   ! BURST-AND-COAST MODE
+    else if (mode_int==2) then   ! BURST-AND-COAST MODE
 
       do i2=1,size(eta_array)
         eta=eta_array(i2)

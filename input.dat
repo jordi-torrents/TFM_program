@@ -1,4 +1,4 @@
-'junk'  folder
+'results'  folder
 None .stat file
 0 mode
 T  noise Scan mode
@@ -8,14 +8,14 @@ T  noise Scan mode
 2.1 burst amplitude
 100 N_measures 100
 10 N_steps 20
-10 N_reset 50000
-0 N_iterations 10
-100   Nnbr
+1000 N_reset 50000
+10 N_iterations 10
+100 N_GNF
 T print_plarization
 T print_GNF
 T print_configurations
 T print_speed
 F ignore_last_config
-12  L (integer)
+20  L (integer)
 1.0   density
 9314  random seed

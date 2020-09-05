@@ -1,5 +1,5 @@
-FLAGS=-Wall -fbounds-check -g
-# OPT=-O3# -freal-8-real-4
+# FLAGS=-Wall -fbounds-check -g
+OPT=-O3# -freal-8-real-4
 COMP=gfortran
 INP=input.dat
 OBJ=obj-mod/
